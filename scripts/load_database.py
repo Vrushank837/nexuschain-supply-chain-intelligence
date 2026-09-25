@@ -1,4 +1,5 @@
 """Create schema and load generated CSV files into PostgreSQL."""
+
 from __future__ import annotations
 
 import argparse
@@ -30,7 +31,11 @@ def load(data_dir: Path, replace: bool = False) -> None:
     create_schema(engine)
     if replace:
         with engine.begin() as conn:
-            conn.execute(text("TRUNCATE TABLE sales_orders, inventory, purchase_orders, bom, parts, suppliers RESTART IDENTITY CASCADE"))
+            conn.execute(
+                text(
+                    "TRUNCATE TABLE sales_orders, inventory, purchase_orders, bom, parts, suppliers RESTART IDENTITY CASCADE"
+                )
+            )
     for table in ORDER:
         df = pd.read_csv(data_dir / f"{table}.csv")
         if table in {"purchase_orders", "inventory", "sales_orders"}:
@@ -46,7 +51,9 @@ def load(data_dir: Path, replace: bool = False) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=Path("data/raw"))
-    parser.add_argument("--replace", action="store_true", help="Replace existing table contents before loading.")
+    parser.add_argument(
+        "--replace", action="store_true", help="Replace existing table contents before loading."
+    )
     args = parser.parse_args()
     load(args.input, replace=args.replace)
     log.info("database_load_complete")

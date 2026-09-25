@@ -1,4 +1,5 @@
 """Convenience pipeline for local/demo builds."""
+
 from __future__ import annotations
 
 import argparse
@@ -14,7 +15,11 @@ def run(module: str, *args: str) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--skip-load", action="store_true", help="Generate/validate/train without loading PostgreSQL.")
+    parser.add_argument(
+        "--skip-load",
+        action="store_true",
+        help="Generate/validate/train without loading PostgreSQL.",
+    )
     args = parser.parse_args()
     run("scripts.generate_data")
     run("scripts.validate_data")

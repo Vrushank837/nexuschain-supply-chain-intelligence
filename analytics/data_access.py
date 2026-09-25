@@ -1,4 +1,5 @@
 """SQL-backed data access functions used by the dashboard and services."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -25,7 +26,9 @@ def kpis() -> pd.DataFrame:
 
 
 def supplier_performance() -> pd.DataFrame:
-    return read_query("SELECT * FROM supplier_performance ORDER BY on_time_rate_pct DESC, total_orders DESC")
+    return read_query(
+        "SELECT * FROM supplier_performance ORDER BY on_time_rate_pct DESC, total_orders DESC"
+    )
 
 
 def supplier_monthly() -> pd.DataFrame:
@@ -33,7 +36,9 @@ def supplier_monthly() -> pd.DataFrame:
 
 
 def inventory_summary() -> pd.DataFrame:
-    return read_query("SELECT * FROM inventory_summary ORDER BY stockout_days DESC, safety_stock_days DESC")
+    return read_query(
+        "SELECT * FROM inventory_summary ORDER BY stockout_days DESC, safety_stock_days DESC"
+    )
 
 
 def bom_tree(root_part_id: str) -> pd.DataFrame:
@@ -46,4 +51,7 @@ def parts() -> pd.DataFrame:
 
 
 def high_risk_suppliers(limit: int = 10) -> pd.DataFrame:
-    return read_query("SELECT * FROM supplier_performance ORDER BY on_time_rate_pct ASC LIMIT :limit", {"limit": limit})
+    return read_query(
+        "SELECT * FROM supplier_performance ORDER BY on_time_rate_pct ASC LIMIT :limit",
+        {"limit": limit},
+    )

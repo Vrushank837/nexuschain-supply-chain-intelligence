@@ -1,4 +1,5 @@
 """Validate generated CSV data before database loading."""
+
 from __future__ import annotations
 
 import argparse
@@ -29,7 +30,10 @@ def validate(data_dir: Path) -> dict[str, list[str]]:
     part_ids = set(frames["parts"]["part_id"])
     if not frames["parts"]["supplier_id"].dropna().isin(supplier_ids).all():
         add("parts", "unknown supplier_id")
-    if not frames["bom"]["parent_part_id"].isin(part_ids).all() or not frames["bom"]["child_part_id"].isin(part_ids).all():
+    if (
+        not frames["bom"]["parent_part_id"].isin(part_ids).all()
+        or not frames["bom"]["child_part_id"].isin(part_ids).all()
+    ):
         add("bom", "unknown part reference")
     if (frames["bom"]["parent_part_id"] == frames["bom"]["child_part_id"]).any():
         add("bom", "self-reference detected")
@@ -53,7 +57,9 @@ def validate(data_dir: Path) -> dict[str, list[str]]:
     if issues:
         report.write_text("\n".join(f"[{k}] {v}" for k, v in issues.items()), encoding="utf-8")
     else:
-        report.write_text("VALIDATION PASSED\nAll structural and referential checks passed.\n", encoding="utf-8")
+        report.write_text(
+            "VALIDATION PASSED\nAll structural and referential checks passed.\n", encoding="utf-8"
+        )
     return issues
 
 

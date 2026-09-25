@@ -1,4 +1,5 @@
 """SHAP explanations for trained XGBoost pipelines."""
+
 from __future__ import annotations
 
 import joblib

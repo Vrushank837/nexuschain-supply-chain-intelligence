@@ -1,4 +1,5 @@
 """Bootstrap a fresh local or hosted PostgreSQL database and model artifacts."""
+
 from __future__ import annotations
 
 import argparse
@@ -34,7 +35,9 @@ def database_has_data(database_url: str) -> bool:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--force", action="store_true", help="Replace an existing populated database.")
+    parser.add_argument(
+        "--force", action="store_true", help="Replace an existing populated database."
+    )
     parser.add_argument("--skip-models", action="store_true", help="Skip model training.")
     args = parser.parse_args()
 
@@ -45,7 +48,9 @@ def main() -> None:
         subprocess.run([sys.executable, "-m", "scripts.generate_data"], check=True)
         issues = validate(data_dir)
         if issues:
-            raise SystemExit("Generated data failed validation; see data/processed/validation_report.txt")
+            raise SystemExit(
+                "Generated data failed validation; see data/processed/validation_report.txt"
+            )
         load(data_dir, replace=True)
 
     if not args.skip_models:

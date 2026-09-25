@@ -14,7 +14,7 @@ try:
     if tree.empty:
         st.info("No BOM relationships found for this root.")
     else:
-        c1,c2,c3 = st.columns(3)
+        c1, c2, c3 = st.columns(3)
         c1.metric("Components", len(tree))
         c2.metric("Max depth", int(tree.level.max()))
         c3.metric("Roll-up cost", f"€{tree.cumulative_cost.sum():,.2f}")
@@ -27,11 +27,20 @@ try:
             safe_label = str(labels.get(node, node)).replace('"', "'")
             lines.append(f'"{node}" [label="{safe_label}"];')
         for _, row in tree.iterrows():
-            parent = row["dependency_path"].split(" -> ")[-2] if " -> " in row["dependency_path"] else root
+            parent = (
+                row["dependency_path"].split(" -> ")[-2]
+                if " -> " in row["dependency_path"]
+                else root
+            )
             lines.append(f'"{parent}" -> "{row.part_id}";')
         lines.append("}")
         st.graphviz_chart("\n".join(lines), use_container_width=True)
-        fig = px.sunburst(tree, path=["part_type", "category", "part_name"], values="cumulative_cost", title="Cumulative cost composition")
+        fig = px.sunburst(
+            tree,
+            path=["part_type", "category", "part_name"],
+            values="cumulative_cost",
+            title="Cumulative cost composition",
+        )
         st.plotly_chart(fig, use_container_width=True)
 except Exception as exc:
     db_error(exc)

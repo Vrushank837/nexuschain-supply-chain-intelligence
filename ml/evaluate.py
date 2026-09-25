@@ -1,4 +1,5 @@
 """Reusable model evaluation helpers."""
+
 from __future__ import annotations
 
 import json
@@ -22,9 +23,13 @@ def evaluate_binary(y_true, probabilities, threshold: float = 0.5) -> dict:
         "recall": float(recall_score(y_true, pred, zero_division=0)),
         "f1": float(f1_score(y_true, pred, zero_division=0)),
         "roc_auc": float(roc_auc_score(y_true, probabilities)) if len(set(y_true)) > 1 else 0.0,
-        "pr_auc": float(average_precision_score(y_true, probabilities)) if len(set(y_true)) > 1 else 0.0,
+        "pr_auc": (
+            float(average_precision_score(y_true, probabilities)) if len(set(y_true)) > 1 else 0.0
+        ),
         "confusion_matrix": confusion_matrix(y_true, pred).tolist(),
-        "classification_report": classification_report(y_true, pred, zero_division=0, output_dict=True),
+        "classification_report": classification_report(
+            y_true, pred, zero_division=0, output_dict=True
+        ),
     }
     return result
 

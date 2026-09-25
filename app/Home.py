@@ -1,4 +1,5 @@
 """NexusChain executive dashboard."""
+
 from __future__ import annotations
 
 import plotly.express as px
@@ -23,14 +24,22 @@ try:
     with left:
         st.subheader("Highest supplier risk")
         df = high_risk_suppliers(8)
-        st.dataframe(df[["supplier_name", "country", "total_orders", "on_time_rate_pct", "avg_delay_days"]], use_container_width=True, hide_index=True)
+        st.dataframe(
+            df[["supplier_name", "country", "total_orders", "on_time_rate_pct", "avg_delay_days"]],
+            use_container_width=True,
+            hide_index=True,
+        )
     with right:
         st.subheader("Inventory risk")
         inv = inventory_summary().head(10)
         fig = px.bar(inv, x="part_name", y="stockout_days", title="Stockout days")
-        fig.update_layout(height=340, margin=dict(l=10,r=10,t=50,b=10), xaxis_title=None, yaxis_title="Days")
+        fig.update_layout(
+            height=340, margin=dict(l=10, r=10, t=50, b=10), xaxis_title=None, yaxis_title="Days"
+        )
         st.plotly_chart(fig, use_container_width=True)
 except Exception as exc:
     db_error(exc)
 
-st.caption("NexusChain · synthetic ERP environment · model snapshot and KPIs are generated from the project database.")
+st.caption(
+    "NexusChain · synthetic ERP environment · model snapshot and KPIs are generated from the project database."
+)

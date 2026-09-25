@@ -1,4 +1,5 @@
 """Generate reproducible synthetic ERP data for the project."""
+
 from __future__ import annotations
 
 import argparse
@@ -13,8 +14,26 @@ from utils.logging_config import get_logger
 
 log = get_logger(__name__)
 
-COUNTRIES = ["Germany", "Switzerland", "Austria", "Czechia", "Poland", "Netherlands", "Spain", "Italy"]
-REGIONS = {"Germany": "DACH", "Switzerland": "DACH", "Austria": "DACH", "Czechia": "CEE", "Poland": "CEE", "Netherlands": "Benelux", "Spain": "Iberia", "Italy": "Southern Europe"}
+COUNTRIES = [
+    "Germany",
+    "Switzerland",
+    "Austria",
+    "Czechia",
+    "Poland",
+    "Netherlands",
+    "Spain",
+    "Italy",
+]
+REGIONS = {
+    "Germany": "DACH",
+    "Switzerland": "DACH",
+    "Austria": "DACH",
+    "Czechia": "CEE",
+    "Poland": "CEE",
+    "Netherlands": "Benelux",
+    "Spain": "Iberia",
+    "Italy": "Southern Europe",
+}
 CATEGORIES = ["electronics", "mechanical", "hydraulics", "fasteners", "materials", "packaging"]
 PART_TYPES = ["raw_material", "component", "subassembly", "assembly", "finished_good"]
 
@@ -28,13 +47,15 @@ def generate_suppliers(fake: Faker) -> pd.DataFrame:
     rows = []
     for i in range(1, settings.n_suppliers + 1):
         country = str(rng.choice(COUNTRIES))
-        rows.append({
-            "supplier_id": f"SUP-{i:04d}",
-            "supplier_name": f"{fake.last_name()} Components {fake.company_suffix()}",
-            "country": country,
-            "region": REGIONS[country],
-            "supplier_category": str(rng.choice(CATEGORIES)),
-        })
+        rows.append(
+            {
+                "supplier_id": f"SUP-{i:04d}",
+                "supplier_name": f"{fake.last_name()} Components {fake.company_suffix()}",
+                "country": country,
+                "region": REGIONS[country],
+                "supplier_category": str(rng.choice(CATEGORIES)),
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -48,17 +69,21 @@ def generate_parts(suppliers: pd.DataFrame, fake: Faker) -> pd.DataFrame:
     for i in range(1, n + 1):
         idx = i - 1
         ptype = types[next(j for j, b in enumerate(boundaries) if idx < b)]
-        supplier_id = None if ptype == "finished_good" else str(rng.choice(suppliers.supplier_id.to_numpy()))
-        rows.append({
-            "part_id": f"PART-{i:05d}",
-            "part_name": f"{fake.word().title()} {fake.word().title()} Module {i:04d}",
-            "part_type": ptype,
-            "category": str(rng.choice(CATEGORIES)),
-            "unit_cost": round(float(rng.lognormal(mean=3.2, sigma=1.0)), 2),
-            "lead_time_days": int(rng.integers(3, 46)),
-            "safety_stock": int(rng.integers(20, 500)),
-            "supplier_id": supplier_id,
-        })
+        supplier_id = (
+            None if ptype == "finished_good" else str(rng.choice(suppliers.supplier_id.to_numpy()))
+        )
+        rows.append(
+            {
+                "part_id": f"PART-{i:05d}",
+                "part_name": f"{fake.word().title()} {fake.word().title()} Module {i:04d}",
+                "part_type": ptype,
+                "category": str(rng.choice(CATEGORIES)),
+                "unit_cost": round(float(rng.lognormal(mean=3.2, sigma=1.0)), 2),
+                "lead_time_days": int(rng.integers(3, 46)),
+                "safety_stock": int(rng.integers(20, 500)),
+                "supplier_id": supplier_id,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -68,7 +93,13 @@ def generate_bom(parts: pd.DataFrame) -> pd.DataFrame:
     groups = {t: parts.loc[parts.part_type == t, "part_id"].tolist() for t in PART_TYPES}
 
     def add(parent: str, child: str) -> None:
-        rows.append({"parent_part_id": parent, "child_part_id": child, "quantity_required": round(float(rng.integers(1, 9)), 3)})
+        rows.append(
+            {
+                "parent_part_id": parent,
+                "child_part_id": child,
+                "quantity_required": round(float(rng.integers(1, 9)), 3),
+            }
+        )
 
     # Guarantee a meaningful 5-level path: finished_good -> assembly -> subassembly -> component -> raw_material.
     for fg in groups["finished_good"]:
@@ -83,7 +114,12 @@ def generate_bom(parts: pd.DataFrame) -> pd.DataFrame:
 
     existing = {(r["parent_part_id"], r["child_part_id"]) for r in rows}
     # Add cross-links between adjacent levels until the configured edge count is reached.
-    adjacent = [("assembly", "subassembly"), ("subassembly", "component"), ("component", "raw_material"), ("finished_good", "assembly")]
+    adjacent = [
+        ("assembly", "subassembly"),
+        ("subassembly", "component"),
+        ("component", "raw_material"),
+        ("finished_good", "assembly"),
+    ]
     attempts = 0
     while len(rows) < settings.n_bom_relationships and attempts < settings.n_bom_relationships * 10:
         parent_type, child_type = adjacent[int(rng.integers(0, len(adjacent)))]
@@ -103,7 +139,7 @@ def generate_purchase_orders(parts: pd.DataFrame, suppliers: pd.DataFrame) -> pd
     fake.seed_instance(settings.random_seed + 1)
     dates = pd.date_range(end=pd.Timestamp("2026-06-30"), periods=730, freq="D")
     eligible = parts[parts.supplier_id.notna()].copy()
-    
+
     rows = []
     for i in range(1, settings.n_purchase_orders + 1):
         part = eligible.iloc[int(rng.integers(0, len(eligible)))]
@@ -122,17 +158,19 @@ def generate_purchase_orders(parts: pd.DataFrame, suppliers: pd.DataFrame) -> pd
             actual = pd.NaT
             status = "open" if rng.random() < 0.8 else "cancelled"
         qty = int(rng.integers(10, 1000))
-        rows.append({
-            "po_id": f"PO-{i:07d}",
-            "supplier_id": supplier_id,
-            "part_id": part.part_id,
-            "order_date": order_date.date(),
-            "promised_date": promised.date(),
-            "actual_delivery_date": None if pd.isna(actual) else actual.date(),
-            "quantity": qty,
-            "unit_price": round(float(part.unit_cost * rng.uniform(0.9, 1.15)), 2),
-            "status": status,
-        })
+        rows.append(
+            {
+                "po_id": f"PO-{i:07d}",
+                "supplier_id": supplier_id,
+                "part_id": part.part_id,
+                "order_date": order_date.date(),
+                "promised_date": promised.date(),
+                "actual_delivery_date": None if pd.isna(actual) else actual.date(),
+                "quantity": qty,
+                "unit_price": round(float(part.unit_cost * rng.uniform(0.9, 1.15)), 2),
+                "status": status,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -147,7 +185,14 @@ def generate_sales_orders(parts: pd.DataFrame) -> pd.DataFrame:
         product = products.iloc[int(rng.integers(0, len(products)))]
         date = pd.Timestamp(rng.choice(dates)).normalize()
         quantity = int(max(1, rng.poisson(35)))
-        rows.append({"order_id": f"SO-{i:07d}", "product_id": product.part_id, "order_date": date.date(), "quantity": quantity})
+        rows.append(
+            {
+                "order_id": f"SO-{i:07d}",
+                "product_id": product.part_id,
+                "order_date": date.date(),
+                "quantity": quantity,
+            }
+        )
     return pd.DataFrame(rows)
 
 
@@ -166,16 +211,20 @@ def generate_inventory(parts: pd.DataFrame) -> pd.DataFrame:
             demand = int(max(0, rng.poisson(demand_mean)))
             receipt = 0
             if rng.random() < 0.24:
-                receipt = int(max(1, rng.normal(part.safety_stock * 0.70, part.safety_stock * 0.15)))
+                receipt = int(
+                    max(1, rng.normal(part.safety_stock * 0.70, part.safety_stock * 0.15))
+                )
             closing = max(0, stock + receipt - demand)
-            rows.append({
-                "part_id": part.part_id,
-                "date": date.date(),
-                "opening_stock": stock,
-                "received_quantity": receipt,
-                "consumed_quantity": demand,
-                "closing_stock": closing,
-            })
+            rows.append(
+                {
+                    "part_id": part.part_id,
+                    "date": date.date(),
+                    "opening_stock": stock,
+                    "received_quantity": receipt,
+                    "consumed_quantity": demand,
+                    "closing_stock": closing,
+                }
+            )
             stock = closing
             if len(rows) >= settings.n_inventory_records:
                 return pd.DataFrame(rows)
@@ -213,7 +262,11 @@ def main() -> None:
         "sales_orders": sales_orders,
     }
     write_csvs(args.output, frames)
-    log.info("data_generation_complete", tables=list(frames), total_rows=sum(len(x) for x in frames.values()))
+    log.info(
+        "data_generation_complete",
+        tables=list(frames),
+        total_rows=sum(len(x) for x in frames.values()),
+    )
 
 
 if __name__ == "__main__":

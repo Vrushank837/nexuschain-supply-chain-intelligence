@@ -1,4 +1,5 @@
 """Model loading and prediction helpers for the dashboard."""
+
 from __future__ import annotations
 
 import joblib
