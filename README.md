@@ -1,5 +1,7 @@
 # NexusChain — Supply Chain Intelligence System
 
+LIVE DEMO : https://nexuschain-supply-chain-intelligence.streamlit.app/
+
 An end-to-end supply-chain intelligence platform built on reproducible synthetic ERP data. It combines PostgreSQL, advanced SQL, Python data engineering, leakage-safe XGBoost models, SHAP explanations, a Streamlit application, automated tests, Docker and free-tier deployment.
 
 ## Project goal
