@@ -6,8 +6,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from utils.config import settings
-
 RAW = Path("data/raw")
 
 
@@ -28,7 +26,7 @@ def supplier_delay_features() -> pd.DataFrame:
 
     # Features are calculated from prior orders only, avoiding target leakage.
     historical = []
-    for supplier_id, group in po.groupby("supplier_id", sort=False):
+    for _supplier_id, group in po.groupby("supplier_id", sort=False):
         g = group.copy()
         g["supplier_prior_delay_rate"] = g["delay_flag"].shift(1).expanding().mean()
         g["supplier_prior_avg_delay"] = g["delay_days"].shift(1).expanding().mean()

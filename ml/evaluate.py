@@ -1,11 +1,18 @@
 """Reusable model evaluation helpers."""
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
-import json
-import pandas as pd
-from sklearn.metrics import average_precision_score, classification_report, confusion_matrix, f1_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (
+    average_precision_score,
+    classification_report,
+    confusion_matrix,
+    f1_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 
 
 def evaluate_binary(y_true, probabilities, threshold: float = 0.5) -> dict:

@@ -1,8 +1,6 @@
 """Model loading and prediction helpers for the dashboard."""
 from __future__ import annotations
 
-from pathlib import Path
-
 import joblib
 import pandas as pd
 

@@ -1,8 +1,8 @@
 """NexusChain executive dashboard."""
 from __future__ import annotations
 
-import streamlit as st
 import plotly.express as px
+import streamlit as st
 
 from analytics.data_access import high_risk_suppliers, inventory_summary, kpis
 from app.common import db_error, header, setup_page

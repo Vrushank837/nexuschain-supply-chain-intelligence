@@ -103,7 +103,7 @@ def generate_purchase_orders(parts: pd.DataFrame, suppliers: pd.DataFrame) -> pd
     fake.seed_instance(settings.random_seed + 1)
     dates = pd.date_range(end=pd.Timestamp("2026-06-30"), periods=730, freq="D")
     eligible = parts[parts.supplier_id.notna()].copy()
-    supplier_map = suppliers.set_index("supplier_id")
+    
     rows = []
     for i in range(1, settings.n_purchase_orders + 1):
         part = eligible.iloc[int(rng.integers(0, len(eligible)))]
@@ -115,10 +115,7 @@ def generate_purchase_orders(parts: pd.DataFrame, suppliers: pd.DataFrame) -> pd
         delivered = bool(rng.random() < 0.94)
         if delivered:
             is_late = rng.random() < (1.0 - reliability)
-            if is_late:
-                delay = int(rng.integers(2, 9))
-            else:
-                delay = int(rng.integers(-2, 1))
+            delay = int(rng.integers(2, 9)) if is_late else int(rng.integers(-2, 1))
             actual = promised + pd.Timedelta(days=delay)
             status = "delivered"
         else:

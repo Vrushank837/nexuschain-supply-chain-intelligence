@@ -2,16 +2,16 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
 from sqlalchemy import create_engine, text
 
-from scripts.load_database import load
-from scripts.validate_data import validate
 from ml.train_delay_model import train as train_delay
 from ml.train_stockout_model import train as train_stockout
+from scripts.load_database import load
+from scripts.validate_data import validate
 from utils.config import settings
 from utils.logging_config import get_logger
 

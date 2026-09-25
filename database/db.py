@@ -1,8 +1,8 @@
 """Database engine helpers."""
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Connection, Engine
@@ -22,7 +22,8 @@ def connection() -> Iterator[Connection]:
 
 
 def run_sql_file(path: str) -> None:
-    sql = open(path, encoding="utf-8").read()
+    with open(path, encoding="utf-8") as file:
+        sql = file.read()
     with connection() as conn:
         for statement in [s.strip() for s in sql.split(";") if s.strip()]:
             conn.execute(text(statement))

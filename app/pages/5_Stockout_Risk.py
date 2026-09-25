@@ -1,6 +1,7 @@
-import streamlit as st
 import pandas as pd
-from analytics.data_access import inventory_summary, read_query
+import streamlit as st
+
+from analytics.data_access import read_query
 from app.common import db_error, header, setup_page
 from services.prediction_service import explain_stockout, load_stockout_model, stockout_prediction
 

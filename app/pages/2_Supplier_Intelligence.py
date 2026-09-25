@@ -1,5 +1,6 @@
-import streamlit as st
 import plotly.express as px
+import streamlit as st
+
 from analytics.data_access import supplier_monthly, supplier_performance
 from app.common import db_error, header, setup_page
 

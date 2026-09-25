@@ -1,8 +1,9 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
+
 from analytics.data_access import read_query
-from app.common import db_error, header, model_error, setup_page
-from services.prediction_service import explain_delay, load_delay_model, delay_prediction
+from app.common import db_error, header, setup_page
+from services.prediction_service import delay_prediction, explain_delay, load_delay_model
 
 setup_page("Supplier delay risk", "⚠️")
 header("Supplier delay risk", "Predict shipment delay probability using historical supplier and order signals")

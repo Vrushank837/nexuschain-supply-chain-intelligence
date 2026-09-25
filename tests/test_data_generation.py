@@ -1,7 +1,7 @@
-import pandas as pd
+
+from faker import Faker
 
 from scripts.generate_data import generate_bom, generate_parts, generate_suppliers
-from faker import Faker
 
 
 def test_generated_hierarchy_has_all_five_part_levels(monkeypatch):

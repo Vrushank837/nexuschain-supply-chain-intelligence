@@ -1,5 +1,6 @@
-import streamlit as st
 import plotly.express as px
+import streamlit as st
+
 from analytics.data_access import bom_tree, parts
 from app.common import db_error, header, setup_page
 
@@ -20,7 +21,7 @@ try:
         st.dataframe(tree, use_container_width=True, hide_index=True)
         st.subheader("Dependency graph")
         nodes = set(tree["part_id"].tolist())
-        labels = dict(zip(tree.part_id, tree.part_name))
+        labels = dict(zip(tree.part_id, tree.part_name, strict=False))
         lines = ["digraph BOM {", "rankdir=LR;"]
         for node in nodes:
             safe_label = str(labels.get(node, node)).replace('"', "'")

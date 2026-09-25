@@ -1,6 +1,7 @@
-import streamlit as st
 import plotly.express as px
-from analytics.data_access import inventory_summary, read_query
+import streamlit as st
+
+from analytics.data_access import inventory_summary
 from app.common import db_error, header, setup_page
 
 setup_page("Inventory intelligence", "📦")
