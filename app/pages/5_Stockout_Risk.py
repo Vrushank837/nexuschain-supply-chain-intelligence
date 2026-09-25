@@ -28,7 +28,7 @@ try:
         df["safety_stock_gap"] = df.closing_stock - df.safety_stock
         df["month"] = pd.to_datetime(df.date).dt.month
         df["day_of_week"] = pd.to_datetime(df.date).dt.dayofweek
-        idx = st.selectbox(
+        idx: int = st.selectbox(
             "Part",
             df.index,
             format_func=lambda i: f"{df.loc[i,'part_id']} · {df.loc[i,'category']}",

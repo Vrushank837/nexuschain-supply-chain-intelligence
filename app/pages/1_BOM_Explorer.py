@@ -9,7 +9,7 @@ header("BOM explorer", "Trace multi-level product dependencies and cumulative co
 try:
     p = parts()
     options = p[p.part_type.isin(["finished_good", "assembly", "subassembly"])].part_id.tolist()
-    root = st.selectbox("Root product / assembly", options)
+    root: str = st.selectbox("Root product / assembly", options)
     tree = bom_tree(root)
     if tree.empty:
         st.info("No BOM relationships found for this root.")

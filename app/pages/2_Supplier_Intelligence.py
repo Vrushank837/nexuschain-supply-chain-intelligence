@@ -18,7 +18,7 @@ try:
     with left:
         monthly = supplier_monthly()
         if not df.empty:
-            selected = st.multiselect(
+            selected: list[int] = st.multiselect(
                 "Suppliers", df.supplier_id.tolist(), default=df.head(5).supplier_id.tolist()
             )
             if selected:

@@ -20,7 +20,7 @@ try:
     if df.empty:
         st.info("No open orders available.")
     else:
-        idx = st.selectbox(
+        idx: int = st.selectbox(
             "Open order",
             df.index,
             format_func=lambda i: f"{df.loc[i,'po_id']} · {df.loc[i,'supplier_name']} · {df.loc[i,'part_id']}",

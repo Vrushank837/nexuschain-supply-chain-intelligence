@@ -34,3 +34,6 @@ models/*.json
 .idea/
 .vscode/
 *.log
+
+# Streamlit secrets
+.streamlit/secrets.toml

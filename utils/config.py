@@ -62,7 +62,17 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings() -> Settings:
-    """Return a cached Settings instance (loaded once per process)."""
+    """Return a cached settings instance (loaded once per process)."""
+    try:
+        import streamlit as st
+
+        database_url = st.secrets.get("DATABASE_URL")
+    except Exception:
+        database_url = None
+
+    if database_url:
+        return Settings(database_url=database_url)
+
     return Settings()
 
 
