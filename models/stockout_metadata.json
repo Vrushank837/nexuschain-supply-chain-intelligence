@@ -1,0 +1,20 @@
+{
+  "categorical_features": [
+    "part_id",
+    "category"
+  ],
+  "numeric_features": [
+    "closing_stock",
+    "safety_stock",
+    "lead_time_days",
+    "demand_avg_7d",
+    "demand_std_7d",
+    "receipt_avg_14d",
+    "days_of_cover",
+    "safety_stock_gap",
+    "month",
+    "day_of_week"
+  ],
+  "target": "stockout_risk_within_14d",
+  "cutoff": "2026-04-18"
+}

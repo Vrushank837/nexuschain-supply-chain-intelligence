@@ -1,0 +1,30 @@
+name: Bootstrap hosted database
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Replace existing database contents"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Generate, validate and load ERP data
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ENVIRONMENT: production
+        run: |
+          if [ "${{ inputs.force }}" = "true" ]; then
+            python -m scripts.bootstrap --force --skip-models
+          else
+            python -m scripts.bootstrap --skip-models
+          fi

@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: supply_chain
+      POSTGRES_USER: scuser
+      POSTGRES_PASSWORD: scpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scuser -d supply_chain"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  bootstrap:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://scuser:scpass@postgres:5432/supply_chain
+      ENVIRONMENT: production
+      MODEL_DIR: /app/models
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - model_artifacts:/app/models
+    command: ["python", "-m", "scripts.bootstrap", "--force"]
+
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://scuser:scpass@postgres:5432/supply_chain
+      ENVIRONMENT: production
+      MODEL_DIR: /app/models
+    ports:
+      - "8501:8501"
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    volumes:
+      - model_artifacts:/app/models:ro
+    command: ["streamlit", "run", "app/Home.py", "--server.address=0.0.0.0", "--server.port=8501"]
+
+volumes:
+  postgres_data:
+  model_artifacts:

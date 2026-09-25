@@ -1,0 +1,19 @@
+{
+  "categorical_features": [
+    "supplier_id",
+    "part_id",
+    "category"
+  ],
+  "numeric_features": [
+    "lead_time_days",
+    "quantity",
+    "unit_price",
+    "month",
+    "day_of_week",
+    "supplier_prior_delay_rate",
+    "supplier_prior_avg_delay",
+    "supplier_prior_orders"
+  ],
+  "target": "delay_flag",
+  "cutoff": "2026-02-05"
+}

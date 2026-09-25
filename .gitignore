@@ -1,0 +1,36 @@
+# Secrets
+.env
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Generated data and models
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+# Model artifacts are intentionally versioned because the demo app needs them at deploy time.
+models/*.joblib
+models/*.json
+!models/*.joblib
+!models/*.json
+!models/.gitkeep
+
+# Notebooks / OS / IDE
+.ipynb_checkpoints/
+.DS_Store
+.idea/
+.vscode/
+*.log
